@@ -9,6 +9,19 @@
 </head>
 <body>
     <div class="container mt-5 main-content">
+        <div class="progress-container mb-4">
+            <div class="container">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="stage-indicator">
+                    <span>Stage 1</span>
+                    <span class="active">Stage 2</span>
+                    <span>Stage 3</span>
+                </div>
+            </div>
+        </div>
+
         <h1>Hardware Challenge - Stage 2</h1>
         <p class="lead">Calculate the output for each input combination using the logic gates.</p>
         
@@ -16,55 +29,22 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Sample Inputs</h5>
-                        <table class="input-table table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>IN0</th>
-                                    <th>IN1</th>
-                                    <th>IN2</th>
-                                    <th>IN3</th>
-                                    <th>Your Output</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>1</td>
-                                    <td><input type="number" class="form-control" min="0" max="1" id="output1"></td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td><input type="number" class="form-control" min="0" max="1" id="output2"></td>
-                                </tr>
-                                <tr>
-                                    <td>0</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td><input type="number" class="form-control" min="0" max="1" id="output3"></td>
-                                </tr>
-                                <tr>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td><input type="number" class="form-control" min="0" max="1" id="output4"></td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td>1</td>
-                                    <td><input type="number" class="form-control" min="0" max="1" id="output5"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <h5 class="card-title">Input Dataset</h5>
+                        <p class="card-text">Calculate the outputs for the first 5 rows of this dataset.</p>
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-sm table-bordered">
+                                <thead class="sticky-top bg-light">
+                                    <tr>
+                                        <th>IN0</th>
+                                        <th>IN1</th>
+                                        <th>IN2</th>
+                                        <th>IN3</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="datasetBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,14 +52,14 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Instructions</h5>
-                        <p class="card-text">For each row:</p>
-                        <ol>
-                            <li>Calculate IN0 AND IN1</li>
-                            <li>Calculate IN2 AND IN3</li>
-                            <li>OR the results from steps 1 and 2</li>
-                            <li>Enter the final result (0 or 1)</li>
-                        </ol>
-                        <button class="btn btn-primary mt-3" onclick="checkAnswers()">Check Answers</button>
+                        <p class="card-text">Based on your identified gates, calculate the outputs for the first 5 rows of the dataset. Enter your answer as a 5-digit binary number (e.g., 11001).</p>
+                        
+                        <div class="form-group mt-3">
+                            <label for="answer">Your Answer:</label>
+                            <input type="text" class="form-control" id="answer" placeholder="Enter 5 digits (0s and 1s)" pattern="[01]{5}" maxlength="5">
+                        </div>
+    
+                        <button class="btn btn-primary mt-3" onclick="checkAnswer()">Check Answer</button>
                         <div id="feedback" class="feedback"></div>
                         <a href="stage3.html" class="btn btn-success mt-3" id="nextStageBtn">Proceed to Stage 3</a>
                     </div>
@@ -88,35 +68,55 @@
         </div>
     </div>
 
-    <div class="progress-container">
-        <div class="container">
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="stage-indicator">
-                <span>Stage 1</span>
-                <span class="active">Stage 2</span>
-                <span>Stage 3</span>
-            </div>
-        </div>
-    </div>
-
     <script>
-        function checkAnswers() {
-            const correctAnswers = [1, 1, 0, 0, 1];
-            const userAnswers = [
-                parseInt(document.getElementById('output1').value),
-                parseInt(document.getElementById('output2').value),
-                parseInt(document.getElementById('output3').value),
-                parseInt(document.getElementById('output4').value),
-                parseInt(document.getElementById('output5').value)
-            ];
+        // Load the dataset when the page loads
+        window.onload = function() {
+            fetch('input.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n').slice(1); // Skip header row
+                    const tbody = document.getElementById('datasetBody');
+                    
+                    rows.forEach(row => {
+                        if (row.trim()) { // Skip empty rows
+                            const cells = row.split(',');
+                            const tr = document.createElement('tr');
+                            cells.forEach(cell => {
+                                const td = document.createElement('td');
+                                td.textContent = cell;
+                                tr.appendChild(td);
+                            });
+                            tbody.appendChild(tr);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading dataset:', error));
+        };
+
+        function checkAnswer() {
+            const correctAnswer = "01001";
+            const userAnswer = document.getElementById('answer').value;
             
             const feedback = document.getElementById('feedback');
             const nextStageBtn = document.getElementById('nextStageBtn');
-            const isCorrect = userAnswers.every((answer, index) => answer === correctAnswers[index]);
             
-            if (isCorrect) {
+            if (userAnswer.length !== 5) {
+                feedback.textContent = "❌ Please enter exactly 5 digits (0s and 1s)";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                nextStageBtn.style.display = "none";
+                return;
+            }
+            
+            if (!/^[01]+$/.test(userAnswer)) {
+                feedback.textContent = "❌ Please enter only 0s and 1s";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                nextStageBtn.style.display = "none";
+                return;
+            }
+            
+            if (userAnswer === correctAnswer) {
                 feedback.textContent = "✅ Correct! You can proceed to the next stage.";
                 feedback.className = "feedback correct";
                 feedback.style.display = "block";
