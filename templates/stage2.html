@@ -61,7 +61,7 @@
     
                         <button class="btn btn-primary mt-3" onclick="checkAnswer()">Submit</button>
                         <div id="feedback" class="feedback"></div>
-                        <a href="stage3.html" class="btn btn-success mt-3" id="nextStageBtn">Proceed to Stage 3</a>
+                        <a href="stage3.html" class="btn btn-success mt-3" id="nextStageBtn">Proceed</a>
                     </div>
                 </div>
             </div>
@@ -117,9 +117,7 @@
             }
             
             if (userAnswer === correctAnswer) {
-                feedback.textContent = "✅ Correct! You can proceed to the next stage.";
-                feedback.className = "feedback correct";
-                feedback.style.display = "block";
+                feedback.style.display = "none";
                 nextStageBtn.style.display = "inline-block";
             } else {
                 feedback.textContent = "❌ Incorrect. Try again!";

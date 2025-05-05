@@ -74,7 +74,7 @@
                             </div>
                             
                             <button class="btn btn-primary mt-3" onclick="checkAnswer()">Submit</button>
-                            <a href="stage2.html" class="btn btn-success mt-3" id="nextStageBtn">Proceed to Stage 2</a>
+                            <a href="stage2.html" class="btn btn-success mt-3" id="nextStageBtn">Proceed</a>
                         </div>
                         <div id="feedback" class="feedback"></div>
                     </div>
@@ -136,9 +136,8 @@
                 return;
             }
             
-            feedback.textContent = "✅ Correct! You can proceed to the next stage.";
-            feedback.className = "feedback correct";
-            feedback.style.display = "block";
+            // On correct answer, hide feedback and show proceed button
+            feedback.style.display = "none";
             nextStageBtn.style.display = "inline-block";
             // Change the circuit image to chip2.jpg
             const circuitImg = document.querySelector('.circuit-image');
