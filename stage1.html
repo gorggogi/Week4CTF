@@ -23,7 +23,7 @@
         </div>
 
         <h1>Hardware Challenge - Stage 1</h1>
-        <p class="lead">Identify the logic gates in the circuit diagram below.</p>
+        <p class="lead">Analyze the circuit diagram and identify the logic gates and their connections.</p>
         
         <div class="row">
             <div class="col-md-8">
@@ -33,16 +33,47 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Instructions</h5>
-                        <p class="card-text">Analyze the provided circuit diagram and identify the logic gates used.</p>
+                        <p class="card-text">Analyze the circuit diagram and identify:</p>
+                        <ol>
+                            <li>The number of each type of gate</li>
+                            <li>The inputs connected to each gate</li>
+                            <li>The connections between gates</li>
+                        </ol>
                     
                         <div class="answer-box">
+                            <h6>Gate Count:</h6>
                             <label for="andGates" class="form-label">Number of AND gates:</label>
                             <input type="number" class="form-control" id="andGates" min="0" max="10">
                             
                             <label for="orGates" class="form-label mt-3">Number of OR gates:</label>
                             <input type="number" class="form-control" id="orGates" min="0" max="10">
+
+                            <h6 class="mt-4">Gate Connections:</h6>
+                            <div class="mb-3">
+                                <label class="form-label">First AND Gate Inputs:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="and1Input1" placeholder="e.g., IN[number]">
+                                    <input type="text" class="form-control" id="and1Input2" placeholder="e.g., IN[number]">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Second AND Gate Inputs:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="and2Input1" placeholder="IN[number]">
+                                    <input type="text" class="form-control" id="and2Input2" placeholder="IN[number]">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">OR Gate Inputs:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="orInput1" placeholder="e.g., AND[number]">
+                                    <input type="text" class="form-control" id="orInput2" placeholder="e.g., AND[number]">
+                                </div>
+                            </div>
                             
-                            <button class="btn btn-primary mt-3" onclick="checkAnswer()">Check Answer</button>
+                            <button class="btn btn-primary mt-3" onclick="checkAnswer()">Submit</button>
                             <a href="stage2.html" class="btn btn-success mt-3" id="nextStageBtn">Proceed to Stage 2</a>
                         </div>
                         <div id="feedback" class="feedback"></div>
@@ -56,19 +87,63 @@
         function checkAnswer() {
             const andGates = parseInt(document.getElementById('andGates').value);
             const orGates = parseInt(document.getElementById('orGates').value);
+            const and1Input1 = document.getElementById('and1Input1').value.toUpperCase();
+            const and1Input2 = document.getElementById('and1Input2').value.toUpperCase();
+            const and2Input1 = document.getElementById('and2Input1').value.toUpperCase();
+            const and2Input2 = document.getElementById('and2Input2').value.toUpperCase();
+            const orInput1 = document.getElementById('orInput1').value.toUpperCase();
+            const orInput2 = document.getElementById('orInput2').value.toUpperCase();
+            
             const feedback = document.getElementById('feedback');
             const nextStageBtn = document.getElementById('nextStageBtn');
             
-            if (andGates === 2 && orGates === 1) {
-                feedback.textContent = "✅ Correct! You can proceed to the next stage.";
-                feedback.className = "feedback correct";
-                feedback.style.display = "block";
-                nextStageBtn.style.display = "inline-block";
-            } else {
-                feedback.textContent = "❌ Incorrect. Try again!";
+            // Check gate counts
+            if (andGates !== 2 || orGates !== 1) {
+                feedback.textContent = "❌ Incorrect number of gates. Try again!";
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
                 nextStageBtn.style.display = "none";
+                return;
+            }
+
+            // Check AND gate 1 inputs
+            if (!((and1Input1 === 'IN0' && and1Input2 === 'IN1') || 
+                  (and1Input1 === 'IN1' && and1Input2 === 'IN0'))) {
+                feedback.textContent = "❌ Incorrect inputs for first AND gate. Try again!";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                nextStageBtn.style.display = "none";
+                return;
+            }
+
+            // Check AND gate 2 inputs
+            if (!((and2Input1 === 'IN2' && and2Input2 === 'IN3') || 
+                  (and2Input1 === 'IN3' && and2Input2 === 'IN2'))) {
+                feedback.textContent = "❌ Incorrect inputs for second AND gate. Try again!";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                nextStageBtn.style.display = "none";
+                return;
+            }
+
+            // Check OR gate inputs
+            if (!((orInput1 === 'AND1' && orInput2 === 'AND2') || 
+                  (orInput1 === 'AND2' && orInput2 === 'AND1'))) {
+                feedback.textContent = "❌ Incorrect inputs for OR gate. Try again!";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                nextStageBtn.style.display = "none";
+                return;
+            }
+            
+            feedback.textContent = "✅ Correct! You can proceed to the next stage.";
+            feedback.className = "feedback correct";
+            feedback.style.display = "block";
+            nextStageBtn.style.display = "inline-block";
+            // Change the circuit image to chip2.jpg
+            const circuitImg = document.querySelector('.circuit-image');
+            if (circuitImg) {
+                circuitImg.src = 'images/chip2.jpg';
             }
         }
     </script>

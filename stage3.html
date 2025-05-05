@@ -12,7 +12,7 @@
 <body>
     <div class="container mt-5 main-content">
         <h1>Hardware Challenge - Stage 3</h1>
-        <p class="lead">Write a JavaScript function to process the circuit logic and generate the correct output.</p>
+        <p class="lead">Write a function to process the circuit logic and generate the correct output.</p>
         
         <div class="row mt-4">
             <div class="col-md-8">
@@ -34,8 +34,16 @@
         <div class="output-area">
             <h3>Output:</h3>
             <pre id="output"></pre>
-            <button id="decodeBtn" class="btn btn-success mt-3" onclick="decodeBinary()" style="display: none;">Decode Binary to ASCII</button>
+            <button id="decodeBtn" class="btn btn-success mt-3" onclick="decodeBinary()" style="display: none;">Decode</button>
             <pre id="asciiOutput"></pre>
+            <div id="flagSubmission" style="display: none;" class="mt-4">
+                <h4>Submit Flag:</h4>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="flagInput" placeholder="Enter the decoded flag">
+                    <button class="btn btn-primary" onclick="submitFlag()">Submit Flag</button>
+                </div>
+                <div id="flagFeedback" class="feedback"></div>
+            </div>
         </div>
     </div>
 
@@ -114,6 +122,7 @@
         function decodeBinary() {
             const binary = document.getElementById("decodeBtn").dataset.binary;
             const asciiOutput = document.getElementById("asciiOutput");
+            const flagSubmission = document.getElementById("flagSubmission");
             
             // Convert binary to ASCII
             let ascii = '';
@@ -123,8 +132,30 @@
             }
             
             // Display the ASCII result
-            asciiOutput.textContent = `Decoded ASCII: ${ascii}`;
+            asciiOutput.textContent = `Retrieved Message: ${ascii}`;
             asciiOutput.style.display = "block";
+            
+            // Show flag submission field
+            flagSubmission.style.display = "block";
+        }
+
+        function submitFlag() {
+            const userFlag = document.getElementById("flagInput").value;
+            const flagFeedback = document.getElementById("flagFeedback");
+            const correctFlag = "HTB{4_G00d_Cm05_3x4mpl3}";
+            
+            if (userFlag === correctFlag) {
+                flagFeedback.textContent = "✅ Correct! Redirecting to completion page...";
+                flagFeedback.className = "feedback correct";
+                flagFeedback.style.display = "block";
+                setTimeout(() => {
+                    window.location.href = "completion.html";
+                }, 1500);
+            } else {
+                flagFeedback.textContent = "❌ Incorrect flag. Try again!";
+                flagFeedback.className = "feedback incorrect";
+                flagFeedback.style.display = "block";
+            }
         }
     </script>
 </body>
