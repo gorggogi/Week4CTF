@@ -38,27 +38,18 @@
                         <div class="answer-box">
                             <h6>Gate Connections:</h6>
                             <div class="mb-3">
-                                <label class="form-label">First AND Gate Inputs:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="and1Input1" placeholder="e.g., IN[number]">
-                                    <input type="text" class="form-control" id="and1Input2" placeholder="e.g., IN[number]">
-                                </div>
+                                <label class="form-label">First Gate Inputs:</label>
+                                <input type="text" class="form-control" id="and1Inputs" placeholder="Format: INPUT OPERATION INPUT">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Second AND Gate Inputs:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="and2Input1" placeholder="IN[number]">
-                                    <input type="text" class="form-control" id="and2Input2" placeholder="IN[number]">
-                                </div>
+                                <label class="form-label">Second Gate Inputs:</label>
+                                <input type="text" class="form-control" id="and2Inputs" placeholder="Format: INPUT OPERATION INPUT">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">OR Gate Inputs:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="orInput1" placeholder="e.g., AND[number]">
-                                    <input type="text" class="form-control" id="orInput2" placeholder="e.g., AND[number]">
-                                </div>
+                                <label class="form-label">Third Gate Inputs:</label>
+                                <input type="text" class="form-control" id="orInputs" placeholder="Format: INPUT OPERATION INPUT">
                             </div>
                             
                             <button class="btn btn-primary mt-3" onclick="checkAnswer()">Submit</button>
@@ -73,19 +64,15 @@
 
     <script>
         function checkAnswer() {
-            const and1Input1 = document.getElementById('and1Input1').value.toUpperCase();
-            const and1Input2 = document.getElementById('and1Input2').value.toUpperCase();
-            const and2Input1 = document.getElementById('and2Input1').value.toUpperCase();
-            const and2Input2 = document.getElementById('and2Input2').value.toUpperCase();
-            const orInput1 = document.getElementById('orInput1').value.toUpperCase();
-            const orInput2 = document.getElementById('orInput2').value.toUpperCase();
+            const and1Inputs = document.getElementById('and1Inputs').value.toUpperCase().replace(/\s+/g, '');
+            const and2Inputs = document.getElementById('and2Inputs').value.toUpperCase().replace(/\s+/g, '');
+            const orInputs = document.getElementById('orInputs').value.toUpperCase().replace(/\s+/g, '');
             
             const feedback = document.getElementById('feedback');
             const nextStageBtn = document.getElementById('nextStageBtn');
             
             // Check AND gate 1 inputs
-            if (!((and1Input1 === 'IN0' && and1Input2 === 'IN1') || 
-                  (and1Input1 === 'IN1' && and1Input2 === 'IN0'))) {
+            if (!(and1Inputs === 'IN0ANDIN1' || and1Inputs === 'IN1ANDIN0')) {
                 feedback.textContent = "❌ Incorrect inputs for first AND gate. Try again!";
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
@@ -94,8 +81,7 @@
             }
 
             // Check AND gate 2 inputs
-            if (!((and2Input1 === 'IN2' && and2Input2 === 'IN3') || 
-                  (and2Input1 === 'IN3' && and2Input2 === 'IN2'))) {
+            if (!(and2Inputs === 'IN2ANDIN3' || and2Inputs === 'IN3ANDIN2')) {
                 feedback.textContent = "❌ Incorrect inputs for second AND gate. Try again!";
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
@@ -104,8 +90,7 @@
             }
 
             // Check OR gate inputs
-            if (!((orInput1 === 'AND1' && orInput2 === 'AND2') || 
-                  (orInput1 === 'AND2' && orInput2 === 'AND1'))) {
+            if (!(orInputs === 'AND1ORAND2' || orInputs === 'AND2ORAND1')) {
                 feedback.textContent = "❌ Incorrect inputs for OR gate. Try again!";
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
