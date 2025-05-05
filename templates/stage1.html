@@ -33,22 +33,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Instructions</h5>
-                        <p class="card-text">Analyze the circuit diagram and identify:</p>
-                        <ol>
-                            <li>The number of each type of gate</li>
-                            <li>The inputs connected to each gate</li>
-                            <li>The connections between gates</li>
-                        </ol>
+                        <p class="card-text">Analyze the circuit diagram and identify the logic gates and their connections.</p>
                     
                         <div class="answer-box">
-                            <h6>Gate Count:</h6>
-                            <label for="andGates" class="form-label">Number of AND gates:</label>
-                            <input type="number" class="form-control" id="andGates" min="0" max="10">
-                            
-                            <label for="orGates" class="form-label mt-3">Number of OR gates:</label>
-                            <input type="number" class="form-control" id="orGates" min="0" max="10">
-
-                            <h6 class="mt-4">Gate Connections:</h6>
+                            <h6>Gate Connections:</h6>
                             <div class="mb-3">
                                 <label class="form-label">First AND Gate Inputs:</label>
                                 <div class="input-group">
@@ -85,8 +73,6 @@
 
     <script>
         function checkAnswer() {
-            const andGates = parseInt(document.getElementById('andGates').value);
-            const orGates = parseInt(document.getElementById('orGates').value);
             const and1Input1 = document.getElementById('and1Input1').value.toUpperCase();
             const and1Input2 = document.getElementById('and1Input2').value.toUpperCase();
             const and2Input1 = document.getElementById('and2Input1').value.toUpperCase();
@@ -97,15 +83,6 @@
             const feedback = document.getElementById('feedback');
             const nextStageBtn = document.getElementById('nextStageBtn');
             
-            // Check gate counts
-            if (andGates !== 2 || orGates !== 1) {
-                feedback.textContent = "❌ Incorrect number of gates. Try again!";
-                feedback.className = "feedback incorrect";
-                feedback.style.display = "block";
-                nextStageBtn.style.display = "none";
-                return;
-            }
-
             // Check AND gate 1 inputs
             if (!((and1Input1 === 'IN0' && and1Input2 === 'IN1') || 
                   (and1Input1 === 'IN1' && and1Input2 === 'IN0'))) {
