@@ -83,7 +83,15 @@
             const outputElement = document.getElementById("output");
             const decodeBtn = document.getElementById("decodeBtn");
             const asciiOutput = document.getElementById("asciiOutput");
+            const flagSubmission = document.getElementById("flagSubmission");
             
+            // Reset UI elements for a new test run
+            outputElement.innerHTML = "";
+            outputElement.style.color = ""; // Reset to default color
+            asciiOutput.style.display = "none";
+            flagSubmission.style.display = "none"; 
+            decodeBtn.style.display = "none"; // Hide decode button initially
+
             try {
                 // Get the user's code
                 const userCode = editor.getValue();
@@ -94,27 +102,20 @@
                 // Run the user's code
                 const result = userFunction(inputData);
                 
-                // Validate the result
-                if (validateOutput(result)) {
-                    outputElement.innerHTML = result;
-                    outputElement.style.color = "green";
-                    // Show decode button
-                    decodeBtn.style.display = "inline-block";
-                    // Store the binary result for decoding
-                    decodeBtn.dataset.binary = result;
-                } else {
-                    outputElement.innerHTML = "❌ Incorrect output. Try again!";
-                    outputElement.style.color = "red";
-                    // Hide decode button
-                    decodeBtn.style.display = "none";
-                    asciiOutput.style.display = "none";
-                }
+                // Display the result as is
+                outputElement.innerHTML = result;
+                
+                // Show decode button and store data for decoding
+                decodeBtn.style.display = "inline-block";
+                decodeBtn.dataset.binary = result;
+
+                // asciiOutput and flagSubmission remain hidden until decodeBinary is called
+
             } catch (error) {
                 outputElement.innerHTML = "❌ Error: " + error.message;
                 outputElement.style.color = "red";
-                // Hide decode button
-                decodeBtn.style.display = "none";
-                asciiOutput.style.display = "none";
+                decodeBtn.style.display = "none"; // Keep decode button hidden on error
+                // asciiOutput and flagSubmission are already hidden by the reset at the start
             }
         }
 
