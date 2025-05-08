@@ -8,6 +8,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
+    <style>
+        .main-content p.lead,
+        .main-content .col-md-4 {
+          -webkit-user-select: none; /* Safari */
+          -moz-user-select: none;    /* Firefox */
+          -ms-user-select: none;     /* IE 10 and IE 11 */
+          user-select: none;         /* Standard syntax */
+        }
+        .main-content .col-md-4 ul li code {
+          font-size: 0.78em; /* Make code text in instructions smaller */
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5 main-content">
@@ -31,15 +43,16 @@
                 <h3>Your Code:</h3>
                 <textarea id="codeEditor"></textarea>
                 <button class="btn btn-primary mt-3" onclick="testCode()">Test Solution</button>
+                <button class="btn btn-info mt-3 ms-2" id="viewDatasetBtn">View Dataset</button>
+                <button class="btn btn-secondary mt-3 ms-2" id="viewChipDiagramBtn">View Chip Diagram</button>
             </div>
             <div class="col-md-4">
                 <h3>Instructions:</h3>
                 <ul>
-                    <li>Write a function that processes the input data</li>
+                    <li>Write a function that processes the input data from the dataset.</li>
                     <li>Your function should return a string of binary digits</li>
-                    <li>The input data is available in the <code>inputData</code> array</li>
-                    <li>Each row contains 4 numbers (0 or 1)</li>
-                </ul>
+                    <li>Each row in <code>inputData</code> is an array of 4 binary digits (e.g., <code>[IN0, IN1, IN2, IN3]</code> = <code>[1,0,1,0]</code>).</li>
+                    </ul>
             </div>
         </div>
 
@@ -59,11 +72,85 @@
         </div>
     </div>
 
+    <!-- Dataset Modal -->
+    <div class="modal fade" id="datasetModal" tabindex="-1" aria-labelledby="datasetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="datasetModalLabel">Input Dataset</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="datasetContent"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chip Diagram Modal -->
+    <div class="modal fade" id="chipDiagramModal" tabindex="-1" aria-labelledby="chipDiagramModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chipDiagramModalLabel">Chip Diagram</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="chipDiagramImage" src="" alt="Chip Diagram" class="img-fluid">
+                    <p id="chipDiagramError" style="display:none;">No diagram available for this stage.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
     <script src="/static/js/input-data.js"></script>
     <script src="/static/js/validator.js"></script>
     <script>
+        // Ensure Bootstrap's JS is loaded before trying to use its components
+        var datasetModalInstance, chipDiagramModalInstance;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            datasetModalInstance = new bootstrap.Modal(document.getElementById('datasetModal'));
+            chipDiagramModalInstance = new bootstrap.Modal(document.getElementById('chipDiagramModal'));
+
+            document.getElementById('viewDatasetBtn').addEventListener('click', function() {
+                if (typeof inputData !== 'undefined' && inputData.length > 0) {
+                    let formattedData = "";
+                    formattedData += "      IN0, IN1, IN2, IN3\n"; // Header indicating positions
+                    formattedData += "Row   -------------------\n";   // Separator
+                    inputData.forEach((row, index) => {
+                        const rowNum = (index + 1).toString().padEnd(3);
+                        formattedData += `${rowNum} : [${row.join(', ')}]\n`;
+                    });
+                    document.getElementById('datasetContent').textContent = formattedData;
+                } else {
+                    document.getElementById('datasetContent').textContent = "Dataset is not available or is empty.";
+                }
+                datasetModalInstance.show();
+            });
+
+            document.getElementById('viewChipDiagramBtn').addEventListener('click', function() {
+                // This part will be completed once we know the image source
+                const diagramImageElement = document.getElementById('chipDiagramImage');
+                const diagramErrorElement = document.getElementById('chipDiagramError');
+                const diagramSrc = "/static/images/chip2.jpg"; // Updated image path
+                
+                // Try to load the image or show an error
+                diagramImageElement.src = diagramSrc; 
+                diagramImageElement.style.display = 'block';
+                diagramErrorElement.style.display = 'none';
+                // Basic error handling if image fails to load
+                diagramImageElement.onerror = function() {
+                    diagramImageElement.style.display = 'none';
+                    diagramErrorElement.style.display = 'block';
+                };
+                chipDiagramModalInstance.show();
+            });
+        });
+
         // Initialize CodeMirror
         var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
             mode: "javascript",
@@ -85,37 +172,45 @@
             const asciiOutput = document.getElementById("asciiOutput");
             const flagSubmission = document.getElementById("flagSubmission");
             
-            // Reset UI elements for a new test run
             outputElement.innerHTML = "";
-            outputElement.style.color = ""; // Reset to default color
+            outputElement.style.color = ""; 
             asciiOutput.style.display = "none";
             flagSubmission.style.display = "none"; 
-            decodeBtn.style.display = "none"; // Hide decode button initially
+            decodeBtn.style.display = "none";
 
             try {
-                // Get the user's code
                 const userCode = editor.getValue();
+                let functionToCall = 'processLogic'; // Default
+
+                // Regex to find common function definition patterns
+                const funcRegex = /(?:function\s+([a-zA-Z_$][\w$]*))|(?:(?:const|let|var)\s+([a-zA-Z_$][\w$]*)\s*=\s*(?:function\b|\([\s\S]*?\)\s*=>|[\w$]+\s*=>))/g;
                 
-                // Create a function from the user's code
-                const userFunction = new Function('inputData', userCode + '\nreturn processLogic(inputData);');
+                let matches = [];
+                let regexMatch;
+                while ((regexMatch = funcRegex.exec(userCode)) !== null) {
+                    if (regexMatch[1]) matches.push(regexMatch[1]); // For 'function name()'
+                    else if (regexMatch[2]) matches.push(regexMatch[2]); // For 'const name = ...'
+                }
+
+                if (matches.length > 0) {
+                    if (matches.includes('processLogic')) {
+                        functionToCall = 'processLogic';
+                    } else {
+                        functionToCall = matches[matches.length - 1]; // Use the last one found
+                    }
+                }
+
+                const userFunctionInstance = new Function('inputData', userCode + `\nreturn ${functionToCall}(inputData);`);
+                const result = userFunctionInstance(inputData);
                 
-                // Run the user's code
-                const result = userFunction(inputData);
-                
-                // Display the result as is
                 outputElement.innerHTML = result;
-                
-                // Show decode button and store data for decoding
                 decodeBtn.style.display = "inline-block";
                 decodeBtn.dataset.binary = result;
-
-                // asciiOutput and flagSubmission remain hidden until decodeBinary is called
 
             } catch (error) {
                 outputElement.innerHTML = "❌ Error: " + error.message;
                 outputElement.style.color = "red";
-                decodeBtn.style.display = "none"; // Keep decode button hidden on error
-                // asciiOutput and flagSubmission are already hidden by the reset at the start
+                decodeBtn.style.display = "none";
             }
         }
 

@@ -1,4 +1,3 @@
-// Input data for the circuit challenge
 const inputData = [
     [0,0,0,0],
     [0,0,1,1],
