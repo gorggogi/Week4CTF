@@ -39,17 +39,17 @@
                             <h6>Gate Connections:</h6>
                             <div class="mb-3">
                                 <label class="form-label">First Gate Inputs:</label>
-                                <input type="text" class="form-control" id="and1Inputs" placeholder="Format: INPUT OPERATION INPUT">
+                                <input type="text" class="form-control" id="and1Inputs" placeholder="Format: INPUT OPERATION INPUT" oninput="updateFirstGateLabel()">
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Second Gate Inputs:</label>
-                                <input type="text" class="form-control" id="and2Inputs" placeholder="Format: INPUT OPERATION INPUT">
+                                <input type="text" class="form-control" id="and2Inputs" placeholder="Format: INPUT OPERATION INPUT" oninput="updateSecondGateLabel()">
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Third Gate Inputs:</label>
-                                <input type="text" class="form-control" id="orInputs" placeholder="Format: INPUT OPERATION INPUT">
+                                <input type="text" class="form-control" id="orInputs" placeholder="Format: INPUT OPERATION INPUT" oninput="updateThirdGateLabel()">
                             </div>
                             
                             <button class="btn btn-primary mt-3" onclick="checkAnswer()">Submit</button>
@@ -63,6 +63,42 @@
     </div>
 
     <script>
+        function updateFirstGateLabel() {
+            const and1Input = document.getElementById('and1Inputs');
+            const and1Label = and1Input.previousElementSibling;
+            const and1Value = and1Input.value.toUpperCase().replace(/\s+/g, '');
+
+            if (and1Value === 'IN0ANDIN1' || and1Value === 'IN1ANDIN0') {
+                if (and1Label) and1Label.textContent = "First Gate Inputs (AND1):";
+            } else {
+                if (and1Label) and1Label.textContent = "First Gate Inputs:";
+            }
+        }
+
+        function updateSecondGateLabel() {
+            const and2Input = document.getElementById('and2Inputs');
+            const and2Label = and2Input.previousElementSibling;
+            const and2Value = and2Input.value.toUpperCase().replace(/\s+/g, '');
+
+            if (and2Value === 'IN2ANDIN3' || and2Value === 'IN3ANDIN2') {
+                if (and2Label) and2Label.textContent = "Second Gate Inputs (AND2):";
+            } else {
+                if (and2Label) and2Label.textContent = "Second Gate Inputs:";
+            }
+        }
+
+        function updateThirdGateLabel() {
+            const orInput = document.getElementById('orInputs');
+            const orLabel = orInput.previousElementSibling;
+            const orValue = orInput.value.toUpperCase().replace(/\s+/g, '');
+
+            if (orValue === 'AND1ORAND2' || orValue === 'AND2ORAND1') {
+                if (orLabel) orLabel.textContent = "Third Gate Inputs (OR):";
+            } else {
+                if (orLabel) orLabel.textContent = "Third Gate Inputs:";
+            }
+        }
+
         function checkAnswer() {
             const and1Inputs = document.getElementById('and1Inputs').value.toUpperCase().replace(/\s+/g, '');
             const and2Inputs = document.getElementById('and2Inputs').value.toUpperCase().replace(/\s+/g, '');
@@ -71,13 +107,23 @@
             const feedback = document.getElementById('feedback');
             const nextStageBtn = document.getElementById('nextStageBtn');
             
+            // Get label elements
+            const and1Label = document.getElementById('and1Inputs').previousElementSibling;
+            const and2Label = document.getElementById('and2Inputs').previousElementSibling;
+            const orLabel = document.getElementById('orInputs').previousElementSibling;
+            
             // Check AND gate 1 inputs
             if (!(and1Inputs === 'IN0ANDIN1' || and1Inputs === 'IN1ANDIN0')) {
                 feedback.textContent = "❌ Incorrect inputs for first AND gate. Try again!";
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
                 nextStageBtn.style.display = "none";
+                // Reset label if it was changed
+                if (and1Label) and1Label.textContent = "First Gate Inputs:"; 
                 return;
+            } else {
+                // Update label for AND gate 1 if correct
+                if (and1Label) and1Label.textContent = "First Gate Inputs (AND1):";
             }
 
             // Check AND gate 2 inputs
@@ -86,7 +132,12 @@
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
                 nextStageBtn.style.display = "none";
+                // Reset label if it was changed
+                if (and2Label) and2Label.textContent = "Second Gate Inputs:"; 
                 return;
+            } else {
+                // Update label for AND gate 2 if correct
+                if (and2Label) and2Label.textContent = "Second Gate Inputs (AND2):";
             }
 
             // Check OR gate inputs
@@ -95,7 +146,10 @@
                 feedback.className = "feedback incorrect";
                 feedback.style.display = "block";
                 nextStageBtn.style.display = "none";
+                if (orLabel) orLabel.textContent = "Third Gate Inputs:";
                 return;
+            } else {
+                if (orLabel) orLabel.textContent = "Third Gate Inputs (OR):";
             }
             
             // On correct answer, hide feedback and show proceed button
