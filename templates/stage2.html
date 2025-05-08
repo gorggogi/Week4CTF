@@ -71,7 +71,7 @@
     <script>
         // Load the dataset when the page loads
         window.onload = function() {
-            fetch('/static/files/input.csv')
+            fetch('/static/files/input_s.csv')
                 .then(response => response.text())
                 .then(data => {
                     const rows = data.split('\n').slice(1); // Skip header row
@@ -94,7 +94,7 @@
         };
 
         function checkAnswer() {
-            const correctAnswer = "01001";
+            const correctAnswer = "01111";
             const userAnswer = document.getElementById('answer').value;
             
             const feedback = document.getElementById('feedback');
